@@ -236,7 +236,13 @@ object Utils {
      */
     fun isValidUrl(value: String?): Boolean {
         try {
-            if (value != null && Patterns.WEB_URL.matcher(value).matches() || URLUtil.isValidUrl(value)) {
+            if (value.isNullOrEmpty()) {
+                return false
+            }
+            if (Patterns.WEB_URL.matcher(value).matches()
+                || Patterns.DOMAIN_NAME.matcher(value).matches()
+                || URLUtil.isValidUrl(value)
+            ) {
                 return true
             }
         } catch (e: Exception) {
@@ -356,7 +362,7 @@ object Utils {
     }
 
     @Throws(IOException::class)
-    fun getUrlContentWithCustomUserAgent(urlStr: String?, httpPort: Int = 0): String {
+    fun getUrlContentWithCustomUserAgent(urlStr: String?, timeout: Int = 30000, httpPort: Int = 0): String {
         val url = URL(urlStr)
         val conn = if (httpPort == 0) {
             url.openConnection()
@@ -368,6 +374,8 @@ object Utils {
                 )
             )
         }
+        conn.connectTimeout = timeout
+        conn.readTimeout = timeout
         conn.setRequestProperty("Connection", "close")
         conn.setRequestProperty("User-agent", "v2rayNG/${BuildConfig.VERSION_NAME}")
         url.userInfo?.let {

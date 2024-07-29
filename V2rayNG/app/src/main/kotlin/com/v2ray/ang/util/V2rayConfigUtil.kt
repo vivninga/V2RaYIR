@@ -2,9 +2,11 @@ package com.v2ray.ang.util
 
 import android.content.Context
 import android.text.TextUtils
+import android.util.Log
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
+import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.AppConfig.PROTOCOL_FREEDOM
 import com.v2ray.ang.AppConfig.TAG_DIRECT
 import com.v2ray.ang.AppConfig.TAG_FRAGMENT
@@ -49,6 +51,14 @@ object V2rayConfigUtil {
                 return Result(true, customConfig)
             }
             val outbound = config.getProxyOutbound() ?: return Result(false, "")
+            val address = outbound.getServerAddress() ?: return Result(false, "")
+            if (!Utils.isIpAddress(address)) {
+                if (!Utils.isValidUrl(address)) {
+                    Log.d(ANG_PACKAGE, "$address is an invalid ip or domain")
+                    return Result(false, "")
+                }
+            }
+
             val result = getV2rayNonCustomConfig(context, outbound, config.remarks)
             //Log.d(ANG_PACKAGE, result.content)
             return result
@@ -134,7 +144,8 @@ object V2rayConfigUtil {
                 settingsStorage?.decodeBool(AppConfig.PREF_SNIFFING_ENABLED, true)
                     ?: true
             v2rayConfig.inbounds[0].sniffing?.enabled = fakedns || sniffAllTlsAndHttp
-            v2rayConfig.inbounds[0].sniffing?.routeOnly = settingsStorage?.decodeBool(AppConfig.PREF_ROUTE_ONLY_ENABLED, false)
+            v2rayConfig.inbounds[0].sniffing?.routeOnly =
+                settingsStorage?.decodeBool(AppConfig.PREF_ROUTE_ONLY_ENABLED, false)
             if (!sniffAllTlsAndHttp) {
                 v2rayConfig.inbounds[0].sniffing?.destOverride?.clear()
             }
@@ -162,10 +173,6 @@ object V2rayConfigUtil {
             && settingsStorage?.decodeBool(AppConfig.PREF_FAKE_DNS_ENABLED) == true
         ) {
             v2rayConfig.fakedns = listOf(V2rayConfig.FakednsBean())
-            v2rayConfig.outbounds.filter { it.protocol == PROTOCOL_FREEDOM && it.tag == TAG_DIRECT }
-                .forEach {
-                    it.settings?.domainStrategy = "UseIP"
-                }
         }
     }
 
@@ -180,7 +187,7 @@ object V2rayConfigUtil {
             )
             routingUserRule(
                 settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_DIRECT)
-                    ?: "", AppConfig.TAG_DIRECT, v2rayConfig
+                    ?: "", TAG_DIRECT, v2rayConfig
             )
             routingUserRule(
                 settingsStorage?.decodeString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED)
@@ -202,37 +209,38 @@ object V2rayConfigUtil {
 
             when (routingMode) {
                 ERoutingMode.BYPASS_LAN.value -> {
-                    routingGeo("ip", "private", AppConfig.TAG_DIRECT, v2rayConfig)
+                    routingGeo("ip", "private", TAG_DIRECT, v2rayConfig)
                 }
 
                 ERoutingMode.BYPASS_MAINLAND.value -> {
-                    routingGeo("", "cn", AppConfig.TAG_DIRECT, v2rayConfig)
-                    routingGeo("domain", "geolocation-cn", AppConfig.TAG_DIRECT, v2rayConfig)
+                    routingGeo("", "cn", TAG_DIRECT, v2rayConfig)
+                    routingGeo("domain", "geolocation-cn", TAG_DIRECT, v2rayConfig)
                     v2rayConfig.routing.rules.add(0, googleapisRoute)
                 }
 
                 ERoutingMode.BYPASS_LAN_MAINLAND.value -> {
-                    routingGeo("ip", "private", AppConfig.TAG_DIRECT, v2rayConfig)
-                    routingGeo("", "cn", AppConfig.TAG_DIRECT, v2rayConfig)
-                    routingGeo("domain", "geolocation-cn", AppConfig.TAG_DIRECT, v2rayConfig)
+                    routingGeo("ip", "private", TAG_DIRECT, v2rayConfig)
+                    routingGeo("", "cn", TAG_DIRECT, v2rayConfig)
+                    routingGeo("domain", "geolocation-cn", TAG_DIRECT, v2rayConfig)
                     v2rayConfig.routing.rules.add(0, googleapisRoute)
                 }
 
                 ERoutingMode.GLOBAL_DIRECT.value -> {
                     val globalDirect = V2rayConfig.RoutingBean.RulesBean(
-                        outboundTag = AppConfig.TAG_DIRECT,
+                        outboundTag = TAG_DIRECT,
                         port = "0-65535"
                     )
                     v2rayConfig.routing.rules.add(globalDirect)
                 }
             }
 
-            if(routingMode != ERoutingMode.GLOBAL_DIRECT.value) {
+            if (routingMode != ERoutingMode.GLOBAL_DIRECT.value) {
                 v2rayConfig.routing.rules.add(
                     V2rayConfig.RoutingBean.RulesBean(
                         outboundTag = AppConfig.TAG_PROXY,
                         port = "0-65535"
-                    ))
+                    )
+                )
             }
 
         } catch (e: Exception) {
@@ -457,7 +465,7 @@ object V2rayConfigUtil {
             if (Utils.isPureIpAddress(domesticDns.first())) {
                 v2rayConfig.routing.rules.add(
                     0, V2rayConfig.RoutingBean.RulesBean(
-                        outboundTag = AppConfig.TAG_DIRECT,
+                        outboundTag = TAG_DIRECT,
                         port = "53",
                         ip = arrayListOf(domesticDns.first()),
                         domain = null
@@ -589,7 +597,8 @@ object V2rayConfigUtil {
                     mux = null
                 )
 
-            var packets = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_PACKETS) ?: "tlshello"
+            var packets =
+                settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_PACKETS) ?: "tlshello"
             if (v2rayConfig.outbounds[0].streamSettings?.security == V2rayConfig.REALITY
                 && packets == "tlshello"
             ) {
