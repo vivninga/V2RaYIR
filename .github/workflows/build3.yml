@@ -1,0 +1,56 @@
+name: Build APK
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      XRAY_CORE_VERSION:
+        description: 'Xray core version or commit hash'
+        required: false
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    
+    - name: Setup Android environment
+      uses: android-actions/setup-android@v3
+
+
+    - name: download latest aar
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: 'GFW-knocker/AndroidLibXrayLite'
+        latest: true
+        fileName: 'libv2ray.aar'
+        out-file-path: '${{ github.workspace }}/V2rayNG/app/libs/'
+
+    - name: Build APK
+      run: |
+        cd ${{ github.workspace }}/V2rayNG
+        chmod 755 gradlew
+        ./gradlew assembleRelease
+
+    - name: check output
+      run: |
+        cd ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
+        ls
+
+    - name: Upload APKs Individually
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk-artifacts
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*.apk
+
+        
