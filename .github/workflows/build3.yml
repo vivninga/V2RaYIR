@@ -43,19 +43,11 @@ jobs:
         echo $ENCODED_KEYSTORE | base64 -di > keystore.jks
 
 
-    - name: Build Signed APK
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    - name: Build Unsiged APK
       run: |
         cd ${{ github.workspace }}/V2rayNG
         chmod 755 gradlew
-        ./gradlew assembleRelease \
-          -Pandroid.injected.signing.store.file=${{ github.workspace }}/keystore.jks \
-          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+        ./gradlew assembleRelease
 
 
     - name: check filenames
@@ -64,11 +56,29 @@ jobs:
         ls
 
 
-    - name: Upload NikaNG to release
-      uses: svenstaro/upload-release-action@v2
+    - name: Sign app APK
+      uses: r0adkll/sign-android-release@v1    
+      # ID used to access action output
+      id: sign_app
       with:
-        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*.apk
-        tag: ${{ github.event.inputs.release_tag }}
-        file_glob: true
-      
+        releaseDirectory: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
+        signingKeyBase64: ${{ secrets.KEYSTORE }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.KEY_PASSWORD }}
+      env:
+        # override default build-tools version (33.0.0) -- optional
+        BUILD_TOOLS_VERSION: "34.0.0"
 
+
+    - name: check filenames
+      run: |
+        echo ${{ steps.sign_app.signedReleaseFile0 }}
+        echo ${{ steps.sign_app.signedReleaseFile1 }}
+        echo ${{ steps.sign_app.signedReleaseFile4 }}
+        echo ${{ steps.sign_app.signedReleaseFiles }}
+        echo ${{ steps.sign_app.signedReleaseFiles }}
+        echo ${{steps.sign_app.outputs}}
+        ech "finish"
+
+    
