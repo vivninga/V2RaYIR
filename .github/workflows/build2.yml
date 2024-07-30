@@ -1,4 +1,4 @@
-name: Download Latest Release
+name: Download Latest aar
 
 on:
   push:
@@ -21,10 +21,11 @@ jobs:
         with:
           repository: 'GFW-knocker/AndroidLibXrayLite'
           latest: true
+          fileName: 'libv2ray.aar'
           out-file-path: '${{ github.workspace }}/myaar/'
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: aar
+          name: 'libv2ray.aar'
           path: ${{ github.workspace }}/myaar/
