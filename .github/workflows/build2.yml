@@ -2,6 +2,7 @@ name: Download Latest aar
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   download:
