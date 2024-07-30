@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
+    <string name="app_name" translatable="false">NikaNG</string>
     <string name="app_widget_name">Switch</string>
     <string name="app_tile_name">Switch</string>
     <string name="app_tile_first_use">First use of this feature, please use the app to add server</string>
@@ -79,7 +79,7 @@
     <string name="server_lab_public_key" translatable="false">PublicKey</string>
     <string name="server_lab_short_id" translatable="false">ShortId</string>
     <string name="server_lab_spider_x" translatable="false">SpiderX</string>
-    <string name="server_lab_secret_key" translatable="false">SecretKey</string>
+    <string name="server_lab_secret_key" translatable="false">Secret or PrivateKey</string>
     <string name="server_lab_reserved">Reserved(Optional)</string>
     <string name="server_lab_local_address">Local address (optional IPv4/IPv6, separated by commas)</string>
     <string name="server_lab_local_mtu">Mtu(optional, default 1420)</string>
@@ -180,8 +180,8 @@
     <string name="summary_pref_proxy_sharing_enabled">Other devices can connect to proxy by your ip address through socks/http, Only enable in trusted network to avoid unauthorized connection</string>
     <string name="toast_warning_pref_proxysharing_short">Allow connections from the LAN, Make sure you are in a trusted network</string>
 
-    <string name="title_pref_allow_insecure">allowInsecure</string>
-    <string name="summary_pref_allow_insecure">When TLS, the default allowInsecure</string>
+    <string name="title_pref_allow_insecure" translatable="false">Disable Allow Insecure</string>
+    <string name="summary_pref_allow_insecure" translatable="false">When TLS, Don\'t allow self-signed config</string>
 
     <string name="title_pref_socks_port">SOCKS5 proxy port</string>
     <string name="summary_pref_socks_port">SOCKS5 proxy port</string>

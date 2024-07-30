@@ -91,8 +91,14 @@ data class V2rayConfig(
                                    var secretKey: String? = null,
                                    val peers: List<WireGuardBean>? = null,
                                    var reserved: List<Int>? = null,
-                                   var mtu :Int? = null
+                                   var mtu :Int? = null,
+                                   var wnoise: String? = null,
+                                   var wnoisecount: String? = null,
+                                   var wnoisedelay: String? = null,
+                                   var wpayloadsize: String? = null
         ) {
+
+
 
             data class VnextBean(var address: String = "",
                                  var port: Int = DEFAULT_PORT,
@@ -130,7 +136,8 @@ data class V2rayConfig(
             data class Response(var type: String)
 
             data class WireGuardBean(var publicKey: String = "",
-                                     var endpoint: String = "")
+                                     var endpoint: String = "",
+                                     var keepAlive: Int = 0)
         }
 
         data class StreamSettingsBean(var network: String = DEFAULT_NETWORK,

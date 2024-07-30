@@ -31,6 +31,11 @@ object WireguardFmt {
                 wireguard.reserved =
                     (queryParam["reserved"] ?: "0,0,0").removeWhiteSpace().split(",")
                         .map { it.toInt() }
+                wireguard.peers?.get(0)?.keepAlive = Utils.parseInt(queryParam["keepalive"] ?: AppConfig.WIREGUARD_keep_alive)
+                wireguard.wnoise = queryParam["wnoise"] ?: AppConfig.WIREGUARD_wnoise
+                wireguard.wnoisecount = queryParam["wnoisecount"] ?: AppConfig.WIREGUARD_wnoisecount
+                wireguard.wnoisedelay = queryParam["wnoisedelay"] ?: AppConfig.WIREGUARD_wnoisedelay
+                wireguard.wpayloadsize = queryParam["wpayloadsize"] ?: AppConfig.WIREGUARD_wpayloadsize
             }
             return config
         } else {

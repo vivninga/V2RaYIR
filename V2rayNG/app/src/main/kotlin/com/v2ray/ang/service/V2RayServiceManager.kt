@@ -152,6 +152,7 @@ object V2RayServiceManager {
             Log.d(ANG_PACKAGE, e.toString())
         }
 
+
         v2rayPoint.configureFileContent = result.content
         v2rayPoint.domainName = config.getV2rayPointDomainAndPort()
         currentConfig = config

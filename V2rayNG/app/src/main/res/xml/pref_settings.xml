@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="pref_sniffing_enabled"
         android:summary="@string/summary_pref_sniffing_enabled"
         android:title="@string/title_pref_sniffing_enabled" />
@@ -135,16 +135,6 @@
             android:key="pref_fragment_enabled"
             android:title="@string/title_pref_fragment_enabled" />
 
-        <EditTextPreference
-            android:key="pref_fragment_length"
-            android:summary="50-100"
-            android:title="@string/title_pref_fragment_length" />
-
-        <EditTextPreference
-            android:key="pref_fragment_interval"
-            android:summary="10-20"
-            android:title="@string/title_pref_fragment_interval" />
-
         <ListPreference
             android:defaultValue="tlshello"
             android:entries="@array/fragment_packets"
@@ -152,6 +142,18 @@
             android:key="pref_fragment_packets"
             android:summary="%s"
             android:title="@string/title_pref_fragment_packets" />
+
+        <EditTextPreference
+            android:key="pref_fragment_length"
+            android:summary="size of chunks in byte"
+            android:title="@string/title_pref_fragment_length" />
+
+        <EditTextPreference
+            android:key="pref_fragment_interval"
+            android:summary="delay between chunks in millisec"
+            android:title="@string/title_pref_fragment_interval" />
+
+
     </PreferenceCategory>
 
     <PreferenceCategory
