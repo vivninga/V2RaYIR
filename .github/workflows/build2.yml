@@ -21,11 +21,16 @@ jobs:
         with:
           repository: 'GFW-knocker/AndroidLibXrayLite'
           latest: true
-          fileName: 'libv2ray.aar'
+          fileName: '*'
           out-file-path: '${{ github.workspace }}/myaar/'
       
+      - name: check filenames
+        run: |
+          cd ${{ github.workspace }}/myaar/
+          ls
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: 'libv2ray.aar'
-          path: ${{ github.workspace }}/myaar/
+          name: myfile
+          path: ${{ github.workspace }}/myaar/*
