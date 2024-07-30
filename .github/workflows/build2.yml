@@ -1,7 +1,6 @@
 name: Download Latest aar
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       release_tag:
@@ -37,6 +36,6 @@ jobs:
       - name: Upload AndroidLibXrayLite to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: '*'
+          file: ${{ github.workspace }}/myaar/*
           tag: ${{ github.event.inputs.release_tag }}
           file_glob: true
