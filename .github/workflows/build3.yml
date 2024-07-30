@@ -1,12 +1,11 @@
-name: Build APK
+name: Build Release APK
 
 on:
-  push:
   workflow_dispatch:
     inputs:
-      XRAY_CORE_VERSION:
-        description: 'Xray core version or commit hash'
-        required: false
+      release_tag:
+        required: true
+        type: string
 
 
 jobs:
@@ -28,7 +27,7 @@ jobs:
       uses: android-actions/setup-android@v3
 
 
-    - name: download latest aar
+    - name: download latest Mahsa-core aar
       uses: robinraju/release-downloader@v1
       with:
         repository: 'GFW-knocker/AndroidLibXrayLite'
@@ -47,10 +46,11 @@ jobs:
         cd ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
         ls
 
-    - name: Upload APKs Individually
-      uses: actions/upload-artifact@v4
+    - name: Upload NikaNG to release
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: apk-artifacts
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*.apk
+        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*.apk
+        tag: ${{ github.event.inputs.release_tag }}
+        file_glob: true
+      
 
-        
