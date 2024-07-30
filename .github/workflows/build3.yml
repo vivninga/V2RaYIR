@@ -73,12 +73,15 @@ jobs:
 
     - name: check filenames
       run: |
-        echo ${{ steps.sign_app.signedReleaseFile0 }}
-        echo ${{ steps.sign_app.signedReleaseFile1 }}
-        echo ${{ steps.sign_app.signedReleaseFile4 }}
-        echo ${{ steps.sign_app.signedReleaseFiles }}
-        echo ${{ steps.sign_app.signedReleaseFiles }}
-        echo ${{steps.sign_app.outputs}}
-        ech "finish"
+        cd ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
+        ls
+
+    - name: Upload NikaNG to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*signed.apk
+        tag: ${{ github.event.inputs.release_tag }}
+        file_glob: true
+
 
     
