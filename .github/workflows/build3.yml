@@ -35,16 +35,34 @@ jobs:
         fileName: 'libv2ray.aar'
         out-file-path: '${{ github.workspace }}/V2rayNG/app/libs/'
 
-    - name: Build APK
+
+    - name: Decode Keystore
+      env:
+        ENCODED_KEYSTORE: ${{ secrets.KEYSTORE }}
+      run: |
+        echo $ENCODED_KEYSTORE | base64 -d > keystore.jks
+
+
+    - name: Build Signed APK
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
         cd ${{ github.workspace }}/V2rayNG
         chmod 755 gradlew
-        ./gradlew assembleRelease
+        ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file=${{ github.workspace }}/keystore.jks \
+          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
 
-    - name: check output
+
+    - name: check filenames
       run: |
         cd ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
         ls
+
 
     - name: Upload NikaNG to release
       uses: svenstaro/upload-release-action@v2
