@@ -1,0 +1,30 @@
+name: Download Latest Release
+
+on:
+  push:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: make directory
+        run: |
+          mkdir ${{ github.workspace }}/myaar
+          cd ${{ github.workspace }}/myaar
+        
+      - name: Download latest release
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: 'GFW-knocker/AndroidLibXrayLite'
+          latest: true
+          out-file-path: '${{ github.workspace }}/myaar/'
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: aar
+          path: ${{ github.workspace }}/myaar/
