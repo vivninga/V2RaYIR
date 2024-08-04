@@ -168,7 +168,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (mainViewModel.isRunning.value == true) {
             Utils.stopVService(this)
         }
-        Observable.timer(500, TimeUnit.MILLISECONDS)
+        Observable.timer(1250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     startV2Ray()

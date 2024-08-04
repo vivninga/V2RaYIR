@@ -181,7 +181,7 @@
     <string name="toast_warning_pref_proxysharing_short">Allow connections from the LAN, Make sure you are in a trusted network</string>
 
     <string name="title_pref_allow_insecure" translatable="false">Disable Allow Insecure</string>
-    <string name="summary_pref_allow_insecure" translatable="false">When TLS, Don\'t allow self-signed config</string>
+    <string name="summary_pref_allow_insecure" translatable="false">Verify config\'s cert, Don\'t allow self-signed config</string>
 
     <string name="title_pref_socks_port">SOCKS5 proxy port</string>
     <string name="summary_pref_socks_port">SOCKS5 proxy port</string>

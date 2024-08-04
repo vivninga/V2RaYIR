@@ -195,7 +195,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     MessageUtil.sendMsg2TestService(
                         getApplication(),
                         AppConfig.MSG_MEASURE_CONFIG,
-                        Pair(item.guid, config.content)
+                        Pair(item.guid, Utils.removeKeepAlive(config.content) )
                     )
                 }
             }

@@ -174,11 +174,12 @@ object V2RayServiceManager {
 
     fun stopV2rayPoint() {
         val service = serviceControl?.get()?.getService() ?: return
-
         if (v2rayPoint.isRunning) {
             GlobalScope.launch(Dispatchers.Default) {
                 try {
                     v2rayPoint.stopLoop()
+                    Thread.sleep(250)
+                    v2rayPoint.terminateByExit()
                 } catch (e: Exception) {
                     Log.d(ANG_PACKAGE, e.toString())
                 }
@@ -193,6 +194,7 @@ object V2RayServiceManager {
         } catch (e: Exception) {
             Log.d(ANG_PACKAGE, e.toString())
         }
+
     }
 
     private class ReceiveMessageHandler : BroadcastReceiver() {

@@ -63,6 +63,24 @@ object WireguardFmt {
         if (outbound.settings?.mtu != null) {
             dicQuery["mtu"] = outbound.settings?.mtu.toString()
         }
+
+        if (outbound.settings?.peers?.get(0)?.keepAlive != null) {
+            dicQuery["keepalive"] = outbound.settings?.peers?.get(0)?.keepAlive.toString()
+        }
+
+        if (outbound.settings?.wnoise != null) {
+            dicQuery["wnoise"] = outbound.settings?.wnoise.toString()
+        }
+        if (outbound.settings?.wnoisecount != null) {
+            dicQuery["wnoisecount"] = outbound.settings?.wnoisecount.toString()
+        }
+        if (outbound.settings?.wnoisedelay != null) {
+            dicQuery["wnoisedelay"] = outbound.settings?.wnoisedelay.toString()
+        }
+        if (outbound.settings?.wpayloadsize != null) {
+            dicQuery["wpayloadsize"] = outbound.settings?.wpayloadsize.toString()
+        }
+
         val query = "?" + dicQuery.toList().joinToString(
             separator = "&",
             transform = { it.first + "=" + it.second })
