@@ -1,7 +1,7 @@
 # NikaNG
 NikaNG is a v2rayNG build upon [Mahsa-Core](https://github.com/GFW-knocker/Xray-core) (xray-core optimized for iran)
 
-<img src="(https://github.com/vivninga/V2RaYIR/blob/master/file-JKsMTSmec39wzwxJTaA3zi29.png)?raw=true" width="240" ><br>
+<img src="https://github.com/vivninga/V2RaYIR/blob/master/file-JKsMTSmec39wzwxJTaA3zi29.png?raw=true" width="240" ><br>
 
 ### features
 - focused on iran firewall compare to v2rayNG
