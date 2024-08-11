@@ -56,30 +56,15 @@ jobs:
         ls
 
 
-    - name: Sign app APK
-      uses: r0adkll/sign-android-release@v1    
-      # ID used to access action output
-      id: sign_app
-      with:
-        releaseDirectory: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
-        signingKeyBase64: ${{ secrets.KEYSTORE }}
-        alias: ${{ secrets.ALIAS }}
-        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
-      env:
-        # override default build-tools version (33.0.0) -- optional
-        BUILD_TOOLS_VERSION: "34.0.0"
-
-
     - name: check filenames
       run: |
         cd ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/
         ls
 
-    - name: Upload NikaNG to release
+    - name: Upload V2RaYIR to release
       uses: svenstaro/upload-release-action@v2
       with:
-        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*signed.apk
+        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/release/*.apk
         tag: ${{ github.event.inputs.release_tag }}
         file_glob: true
 
