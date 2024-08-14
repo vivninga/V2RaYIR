@@ -20,17 +20,19 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
-import com.tbruyelle.rxpermissions.RxPermissions
+import com.google.android.material.tabs.TabLayout
+import com.tbruyelle.rxpermissions3.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.ActivityMainBinding
-import com.v2ray.ang.databinding.LayoutProgressBinding
 import com.v2ray.ang.dto.EConfigType
+import com.v2ray.ang.extension.isNetworkConnected
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
 import com.v2ray.ang.service.V2RayServiceManager
@@ -38,16 +40,18 @@ import com.v2ray.ang.util.AngConfigManager
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.MainViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.drakeet.support.toast.ToastCompat
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding: ActivityMainBinding
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private val adapter by lazy { MainRecyclerAdapter(this) }
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
@@ -57,14 +61,29 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             startV2Ray()
         }
     }
+    private val requestSubSettingActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        initGroupTab()
+    }
+    private val tabGroupListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            val selectId = tab?.tag.toString()
+            if (selectId != mainViewModel.subscriptionId) {
+                mainViewModel.subscriptionIdChanged(selectId)
+            }
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+        }
+    }
     private var mItemTouchHelper: ItemTouchHelper? = null
     val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
         title = getString(R.string.title_server)
         setSupportActionBar(binding.toolbar)
 
@@ -106,7 +125,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
 
-
+        initGroupTab()
         setupViewModel()
         mainViewModel.copyAssets(assets)
 
@@ -157,11 +176,38 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mainViewModel.startListenBroadcast()
     }
 
-    fun startV2Ray() {
-        if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
+    private fun initGroupTab() {
+        binding.tabGroup.removeOnTabSelectedListener(tabGroupListener)
+        binding.tabGroup.removeAllTabs()
+        binding.tabGroup.isVisible = false
+
+        val (listId, listRemarks) = mainViewModel.getSubscriptions(this)
+        if (listId == null || listRemarks == null) {
             return
         }
-        V2RayServiceManager.startV2Ray(this)
+
+        for (it in listRemarks.indices) {
+            val tab = binding.tabGroup.newTab()
+            tab.text = listRemarks[it]
+            tab.tag = listId[it]
+            binding.tabGroup.addTab(tab)
+        }
+        val selectIndex =
+            listId.indexOf(mainViewModel.subscriptionId).takeIf { it >= 0 } ?: (listId.count() - 1)
+        binding.tabGroup.selectTab(binding.tabGroup.getTabAt(selectIndex))
+        binding.tabGroup.addOnTabSelectedListener(tabGroupListener)
+        binding.tabGroup.isVisible = true
+    }
+
+    fun startV2Ray() {
+        if (isNetworkConnected) {
+            if (mainStorage?.decodeString(MmkvManager.KEY_SELECTED_SERVER).isNullOrEmpty()) {
+                return
+            }
+            V2RayServiceManager.startV2Ray(this)
+        } else {
+            ToastCompat.makeText(this, getString(R.string.connection_test_fail), Toast.LENGTH_LONG).show()
+        }
     }
 
     fun restartV2Ray() {
@@ -284,7 +330,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             AlertDialog.Builder(this).setMessage(R.string.del_config_comfirm)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     mainViewModel.removeDuplicateServer()
-                    mainViewModel.reloadServerList()
                 }
                 .setNegativeButton(android.R.string.no) {_, _ ->
                     //do noting
@@ -309,11 +354,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mainViewModel.reloadServerList()
             true
         }
-        R.id.filter_config -> {
-            mainViewModel.filterConfig(this)
-            true
-        }
-
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -378,24 +418,28 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun importBatchConfig(server: String?) {
-        val dialog = AlertDialog.Builder(this)
-            .setView(LayoutProgressBinding.inflate(layoutInflater).root)
-            .setCancelable(false)
-            .show()
+//        val dialog = AlertDialog.Builder(this)
+//            .setView(LayoutProgressBinding.inflate(layoutInflater).root)
+//            .setCancelable(false)
+//            .show()
+        binding.pbWaiting.show()
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val count = AngConfigManager.importBatchConfig(server, mainViewModel.subscriptionId, true)
+            val (count, countSub) = AngConfigManager.importBatchConfig(server, mainViewModel.subscriptionId, true)
             delay(500L)
             launch(Dispatchers.Main) {
                 if (count > 0) {
                     toast(R.string.toast_success)
                     mainViewModel.reloadServerList()
+                } else if (countSub > 0) {
+                    initGroupTab()
                 } else {
                     toast(R.string.toast_failure)
                 }
-                dialog.dismiss()
+                //dialog.dismiss()
+                binding.pbWaiting.hide()
             }
-        }
+            }
     }
 
     private fun importConfigCustomClipboard()
@@ -473,10 +517,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      * import config from sub
      */
     private fun importConfigViaSub() : Boolean {
-        val dialog = AlertDialog.Builder(this)
-            .setView(LayoutProgressBinding.inflate(layoutInflater).root)
-            .setCancelable(false)
-            .show()
+//        val dialog = AlertDialog.Builder(this)
+//            .setView(LayoutProgressBinding.inflate(layoutInflater).root)
+//            .setCancelable(false)
+//            .show()
+        binding.pbWaiting.show()
 
         lifecycleScope.launch(Dispatchers.IO) {
             val count = AngConfigManager.updateConfigViaSubAll()
@@ -488,7 +533,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 } else {
                     toast(R.string.toast_failure)
                 }
-                dialog.dismiss()
+                //dialog.dismiss()
+                binding.pbWaiting.hide()
             }
         }
         return true
@@ -585,12 +631,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return super.onKeyDown(keyCode, event)
     }
 
+
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            //R.id.server_profile -> activityClass = MainActivity::class.java
             R.id.sub_setting -> {
-                startActivity(Intent(this, SubSettingActivity::class.java))
+                requestSubSettingActivity.launch(Intent(this,SubSettingActivity::class.java))
             }
             R.id.settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java)

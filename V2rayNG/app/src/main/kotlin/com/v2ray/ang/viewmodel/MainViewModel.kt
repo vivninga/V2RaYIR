@@ -3,15 +3,11 @@ package com.v2ray.ang.viewmodel
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.AssetManager
 import android.os.Build
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.ArrayAdapter
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -21,8 +17,8 @@ import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.R
-import com.v2ray.ang.databinding.DialogConfigFilterBinding
 import com.v2ray.ang.dto.EConfigType
+import com.v2ray.ang.dto.ProfileItem
 import com.v2ray.ang.dto.ServerConfig
 import com.v2ray.ang.dto.ServersCache
 import com.v2ray.ang.dto.V2rayConfig
@@ -64,7 +60,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     var serverList = MmkvManager.decodeServerList()
     var subscriptionId: String = settingsStorage.decodeString(AppConfig.CACHE_SUBSCRIPTION_ID, "")?:""
-    var keywordFilter: String = settingsStorage.decodeString(AppConfig.CACHE_KEYWORD_FILTER, "")?:""
+    //var keywordFilter: String = settingsStorage.decodeString(AppConfig.CACHE_KEYWORD_FILTER, "")?:""
         private set
     val serversCache = mutableListOf<ServersCache>()
     val isRunning by lazy { MutableLiveData<Boolean>() }
@@ -126,7 +122,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val key = MmkvManager.encodeServerConfig("", config)
                 serverRawStorage?.encode(key, server)
                 serverList.add(0, key)
-                serversCache.add(0, ServersCache(key, config))
+                val profile = ProfileItem(
+                    configType = config.configType,
+                    subscriptionId = config.subscriptionId,
+                    remarks = config.remarks,
+                    server = config.getProxyOutbound()?.getServerAddress(),
+                    serverPort = config.getProxyOutbound()?.getServerPort(),
+                )
+                serversCache.add(0, ServersCache(key, profile))
                 return true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -145,14 +148,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updateCache() {
         serversCache.clear()
         for (guid in serverList) {
-            val config = MmkvManager.decodeServerConfig(guid) ?: continue
-            if (subscriptionId.isNotEmpty() && subscriptionId != config.subscriptionId) {
+            var profile = MmkvManager.decodeProfileConfig(guid)
+            if (profile == null) {
+                val config = MmkvManager.decodeServerConfig(guid) ?: continue
+                profile = ProfileItem(
+                    configType = config.configType,
+                    subscriptionId = config.subscriptionId,
+                    remarks = config.remarks,
+                    server = config.getProxyOutbound()?.getServerAddress(),
+                    serverPort = config.getProxyOutbound()?.getServerPort(),
+                )
+                MmkvManager.encodeServerConfig(guid, config)
+            }
+
+            if (subscriptionId.isNotEmpty() && subscriptionId != profile.subscriptionId) {
                 continue
             }
 
-            if (keywordFilter.isEmpty() || config.remarks.contains(keywordFilter)) {
-                serversCache.add(ServersCache(guid, config))
-            }
+//            if (keywordFilter.isEmpty() || config.remarks.contains(keywordFilter)) {
+            serversCache.add(ServersCache(guid, profile))
         }
     }
 
@@ -164,9 +178,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         getApplication<AngApplication>().toast(R.string.connection_test_testing)
         for (item in serversCache) {
-            item.config.getProxyOutbound()?.let { outbound ->
-                val serverAddress = outbound.getServerAddress()
-                val serverPort = outbound.getServerPort()
+            item.profile.let { outbound ->
+                val serverAddress = outbound.server
+                val serverPort = outbound.serverPort
                 if (serverAddress != null && serverPort != null) {
                     tcpingTestScope.launch {
                         val testResult = SpeedtestUtil.tcping(serverAddress, serverPort)
@@ -206,60 +220,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         MessageUtil.sendMsg2Service(getApplication(), AppConfig.MSG_MEASURE_DELAY, "")
     }
 
-    fun filterConfig(context: Context) {
+    fun subscriptionIdChanged(id: String) {
+        if (subscriptionId != id) {
+            subscriptionId = id
+            settingsStorage.encode(AppConfig.CACHE_SUBSCRIPTION_ID, subscriptionId)
+            reloadServerList()
+        }
+    }
+
+    fun getSubscriptions(context: Context) : Pair<MutableList<String>?, MutableList<String>?> {
         val subscriptions = MmkvManager.decodeSubscriptions()
-        val listId = subscriptions.map { it.first }.toList().toMutableList()
-        val listRemarks = subscriptions.map { it.second.remarks }.toList().toMutableList()
-        listRemarks += context.getString(R.string.filter_config_all)
-        val checkedItem = if (subscriptionId.isNotEmpty()) {
-            listId.indexOf(subscriptionId)
-        } else {
-            listRemarks.count() - 1
+        if (subscriptionId.isNotEmpty()
+            && !subscriptions.map { it.first }.contains(subscriptionId)
+        ) {
+            subscriptionIdChanged("")
         }
-
-        val ivBinding = DialogConfigFilterBinding.inflate(LayoutInflater.from(context))
-        ivBinding.spSubscriptionId.adapter = ArrayAdapter<String>(
-            context,
-            android.R.layout.simple_spinner_dropdown_item,
-            listRemarks
-        )
-        ivBinding.spSubscriptionId.setSelection(checkedItem)
-        ivBinding.etKeyword.text = Utils.getEditable(keywordFilter)
-        val builder = AlertDialog.Builder(context).setView(ivBinding.root)
-        builder.setTitle(R.string.title_filter_config)
-        builder.setPositiveButton(R.string.tasker_setting_confirm) { dialogInterface: DialogInterface?, _: Int ->
-            try {
-                val position = ivBinding.spSubscriptionId.selectedItemPosition
-                subscriptionId = if (listRemarks.count() - 1 == position) {
-                    ""
-                } else {
-                    subscriptions[position].first
-                }
-                keywordFilter = ivBinding.etKeyword.text.toString()
-                settingsStorage?.encode(AppConfig.CACHE_SUBSCRIPTION_ID, subscriptionId)
-                settingsStorage?.encode(AppConfig.CACHE_KEYWORD_FILTER, keywordFilter)
-                reloadServerList()
-
-                dialogInterface?.dismiss()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        if (subscriptions.isEmpty()) {
+            return null to null
         }
-        builder.show()
-//        AlertDialog.Builder(context)
-//            .setSingleChoiceItems(listRemarks.toTypedArray(), checkedItem) { dialog, i ->
-//                try {
-//                    subscriptionId = if (listRemarks.count() - 1 == i) {
-//                        ""
-//                    } else {
-//                        subscriptions[i].first
-//                    }
-//                    reloadServerList()
-//                    dialog.dismiss()
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }.show()
+        val listId = subscriptions.map { it.first }.toMutableList()
+        listId.add(0, "")
+        val listRemarks = subscriptions.map { it.second.remarks }.toMutableList()
+        listRemarks.add(0, context.getString(R.string.filter_config_all))
+
+        return listId to listRemarks
     }
 
     fun getPosition(guid: String): Int {
@@ -271,27 +255,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun removeDuplicateServer() {
-        val deleteServer = mutableListOf<String>()
-        serversCache.forEachIndexed { index, it ->
-            val outbound = it.config.getProxyOutbound()
-            serversCache.forEachIndexed { index2, it2 ->
-                if (index2 > index) {
-                    val outbound2 = it2.config.getProxyOutbound()
-                    if (outbound == outbound2 && !deleteServer.contains(it2.guid)) {
-                        deleteServer.add(it2.guid)
+        viewModelScope.launch(Dispatchers.Default) {
+            val deleteServer = mutableListOf<String>()
+            serversCache.forEachIndexed { index, it ->
+                val outbound = MmkvManager.decodeServerConfig(it.guid)?.getProxyOutbound()
+                serversCache.forEachIndexed { index2, it2 ->
+                    if (index2 > index) {
+                        val outbound2 = MmkvManager.decodeServerConfig(it2.guid)?.getProxyOutbound()
+                        if (outbound == outbound2 && !deleteServer.contains(it2.guid)) {
+                            deleteServer.add(it2.guid)
+                        }
                     }
                 }
             }
+            for (it in deleteServer) {
+                MmkvManager.removeServer(it)
+            }
+            launch(Dispatchers.Main) {
+                reloadServerList()
+                getApplication<AngApplication>().toast(
+                    getApplication<AngApplication>().getString(
+                        R.string.title_del_duplicate_config_count,
+                        deleteServer.count()
+                    )
+                )
+            }
+
         }
-        for (it in deleteServer) {
-            MmkvManager.removeServer(it)
-        }
-        getApplication<AngApplication>().toast(
-            getApplication<AngApplication>().getString(
-                R.string.title_del_duplicate_config_count,
-                deleteServer.count()
-            )
-        )
     }
 
     fun copyAssets(assets: AssetManager) {

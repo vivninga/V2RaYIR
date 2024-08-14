@@ -11,18 +11,22 @@ android {
         applicationId = "com.MahsaNet.NikaNG"
         minSdk = 21
         targetSdk = 34
-        versionCode = 578
-        versionName = "1.8.34"
+        versionCode = 580
+        versionName = "1.8.36"
         multiDexEnabled = true
-        splits.abi {
-            reset()
-            include(
-                "arm64-v8a",
-                "armeabi-v7a",
-                "x86_64",
-                "x86"
-            )
+        splits {
+            abi {
+                isEnable = true
+                include(
+                    "arm64-v8a",
+                    "armeabi-v7a",
+                    "x86_64",
+                    "x86"
+                )
+                isUniversalApk = true
+            }
         }
+
     }
 
     compileOptions {
@@ -48,13 +52,6 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
-
-    splits {
-        abi {
-            isEnable = true
-            isUniversalApk = true
-        }
     }
 
     applicationVariants.all {
@@ -87,7 +84,7 @@ android {
         buildConfig = true
     }
 
-    packagingOptions {
+    packaging {
         jniLibs {
             useLegacyPackaging = true
         }
@@ -133,7 +130,7 @@ dependencies {
     implementation(libs.language.json)
     implementation(libs.quickie.bundled)
     implementation(libs.core)
-
+    // Updating these 2 dependencies may cause some errors. Be careful.
     implementation(libs.work.runtime.ktx)
     implementation(libs.work.multiprocess)
 }
