@@ -589,6 +589,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // Handle navigation view item clicks here.
         when (item.itemId) {
             //R.id.server_profile -> activityClass = MainActivity::class.java
+            R.id.sub_kaniar -> {
+                startActivity(Intent(this, SubKaniarActivity::class.java))
+            }
             R.id.sub_setting -> {
                 startActivity(Intent(this, SubSettingActivity::class.java))
             }

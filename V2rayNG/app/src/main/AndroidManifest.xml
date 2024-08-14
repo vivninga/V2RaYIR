@@ -89,6 +89,9 @@
             android:windowSoftInputMode="stateUnchanged" />
         <activity
             android:exported="false"
+            android:name=".ui.SubKaniarActivity" />
+        <activity
+            android:exported="false"
             android:name=".ui.SubSettingActivity" />
         <activity
             android:exported="false"

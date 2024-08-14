@@ -611,7 +611,7 @@ object V2rayConfigUtil {
                     length = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_LENGTH)
                         ?: "10-20",
                     interval = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL)
-                        ?: "10-20"
+                        ?: "0"
                 )
             )
             fragmentOutbound.streamSettings = V2rayConfig.OutboundBean.StreamSettingsBean(
