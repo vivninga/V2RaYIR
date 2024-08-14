@@ -1,5 +1,6 @@
 # V2RaYIR
-[![Github All Releases](https://img.shields.io/github/downloads/vivninga/V2RaYIR/total.svg)]()
+[![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/vivninga/V2RaYIR/latest/total)
+]()
 
 NikaNG is a v2rayNG build upon [Mahsa-Core](https://github.com/GFW-knocker/Xray-core) (xray-core optimized for iran)
 
