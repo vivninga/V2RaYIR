@@ -11,8 +11,8 @@ android {
         applicationId = "com.MahsaNet.NikaNG"
         minSdk = 21
         targetSdk = 34
-        versionCode = 580
-        versionName = "1.8.36"
+        versionCode = 579
+        versionName = "1.8.35"
         multiDexEnabled = true
         splits {
             abi {
