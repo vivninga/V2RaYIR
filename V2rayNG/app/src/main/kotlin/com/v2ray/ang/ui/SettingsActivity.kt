@@ -191,11 +191,11 @@ class SettingsActivity : BaseActivity() {
             muxConcurrency?.summary = settingsStorage.decodeString(AppConfig.PREF_MUX_CONCURRENCY, "8")
             muxXudpConcurrency?.summary = settingsStorage.decodeString(AppConfig.PREF_MUX_XUDP_CONCURRENCY, "8")
 
-            updateFragment(settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, false))
-            fragment?.isChecked = settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, false)
+            updateFragment(settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, true))
+            fragment?.isChecked = settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, true)
             fragmentPackets?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_PACKETS, "tlshello")
             fragmentLength?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "10-20")
-            fragmentInterval?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "10-20")
+            fragmentInterval?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "0")
 
             autoUpdateCheck?.isChecked = settingsStorage.getBoolean(AppConfig.SUBSCRIPTION_AUTO_UPDATE, false)
             autoUpdateInterval?.summary = settingsStorage.decodeString(AppConfig.SUBSCRIPTION_AUTO_UPDATE_INTERVAL,AppConfig.SUBSCRIPTION_DEFAULT_UPDATE_INTERVAL)
@@ -347,7 +347,7 @@ class SettingsActivity : BaseActivity() {
             if (enabled) {
                 updateFragmentPackets(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_PACKETS, "tlshello"))
                 updateFragmentLength(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "10-20"))
-                updateFragmentInterval(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "10-20"))
+                updateFragmentInterval(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "0"))
             }
         }
         private fun updateFragmentPackets(value: String?) {

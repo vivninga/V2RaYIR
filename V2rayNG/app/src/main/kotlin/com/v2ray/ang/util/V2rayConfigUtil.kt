@@ -581,7 +581,7 @@ object V2rayConfigUtil {
 
     private fun updateOutboundFragment(v2rayConfig: V2rayConfig): Boolean {
         try {
-            if (settingsStorage?.decodeBool(AppConfig.PREF_FRAGMENT_ENABLED, false) == false) {
+            if (settingsStorage?.decodeBool(AppConfig.PREF_FRAGMENT_ENABLED, true) == false) {
                 return true
             }
 
@@ -611,7 +611,7 @@ object V2rayConfigUtil {
                     length = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_LENGTH)
                         ?: "10-20",
                     interval = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL)
-                        ?: "10-20"
+                        ?: "0"
                 )
             )
             fragmentOutbound.streamSettings = V2rayConfig.OutboundBean.StreamSettingsBean(
