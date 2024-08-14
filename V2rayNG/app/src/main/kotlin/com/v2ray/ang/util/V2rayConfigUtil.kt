@@ -608,11 +608,7 @@ object V2rayConfigUtil {
             if (settingsStorage?.decodeBool(AppConfig.PREF_FRAGMENT_ENABLED, false) == false) {
                 return true
             }
-            if (v2rayConfig.outbounds[0].streamSettings?.security != V2rayConfig.TLS
-                && v2rayConfig.outbounds[0].streamSettings?.security != V2rayConfig.REALITY
-            ) {
-                return true
-            }
+
 
             val fragmentOutbound =
                 V2rayConfig.OutboundBean(
@@ -627,17 +623,17 @@ object V2rayConfigUtil {
                 && packets == "tlshello"
             ) {
                 packets = "1-3"
-            } else if (v2rayConfig.outbounds[0].streamSettings?.security == V2rayConfig.TLS
-                && packets != "tlshello"
+            } else if (v2rayConfig.outbounds[0].streamSettings?.security != V2rayConfig.TLS
+                && packets == "tlshello"
             ) {
-                packets = "tlshello"
+                packets = "fakehost"
             }
 
             fragmentOutbound.settings = V2rayConfig.OutboundBean.OutSettingsBean(
                 fragment = V2rayConfig.OutboundBean.OutSettingsBean.FragmentBean(
                     packets = packets,
                     length = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_LENGTH)
-                        ?: "50-100",
+                        ?: "10-20",
                     interval = settingsStorage?.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL)
                         ?: "10-20"
                 )

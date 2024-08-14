@@ -26,7 +26,7 @@ object VmessFmt {
             return parseVmessStd(str)
         }
 
-        val allowInsecure = settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false
+        val allowInsecure = !(settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false)
         val config = ServerConfig.create(EConfigType.VMESS)
         val streamSetting = config.outboundBean?.streamSettings ?: return null
         var result = str.replace(EConfigType.VMESS.protocolScheme, "")
@@ -111,7 +111,7 @@ object VmessFmt {
     }
 
     fun parseVmessStd(str: String): ServerConfig? {
-        var allowInsecure = settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false
+        var allowInsecure = !(settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false)
         val config = ServerConfig.create(EConfigType.VMESS)
 
         val uri = URI(Utils.fixIllegalUrl(str))

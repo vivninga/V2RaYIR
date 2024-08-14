@@ -152,6 +152,7 @@ object V2RayServiceManager {
             Log.d(ANG_PACKAGE, e.toString())
         }
 
+
         v2rayPoint.configureFileContent = result.content
         v2rayPoint.domainName = config.getV2rayPointDomainAndPort()
         currentConfig = config
@@ -173,11 +174,12 @@ object V2RayServiceManager {
 
     fun stopV2rayPoint() {
         val service = serviceControl?.get()?.getService() ?: return
-
         if (v2rayPoint.isRunning) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     v2rayPoint.stopLoop()
+                    Thread.sleep(250)
+                    v2rayPoint.terminateByExit()
                 } catch (e: Exception) {
                     Log.d(ANG_PACKAGE, e.toString())
                 }
@@ -192,6 +194,7 @@ object V2RayServiceManager {
         } catch (e: Exception) {
             Log.d(ANG_PACKAGE, e.toString())
         }
+
     }
 
     private class ReceiveMessageHandler : BroadcastReceiver() {

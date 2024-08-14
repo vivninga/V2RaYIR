@@ -20,7 +20,7 @@ object VlessFmt {
     }
 
     fun parseVless(str: String): ServerConfig? {
-        var allowInsecure = settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false
+        var allowInsecure = !(settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false)
         val config = ServerConfig.create(EConfigType.VLESS)
 
         val uri = URI(Utils.fixIllegalUrl(str))

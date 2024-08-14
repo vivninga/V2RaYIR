@@ -453,5 +453,10 @@ object Utils {
     }
 
 
+    fun removeKeepAlive(mystr: String): String {
+        val keepAliveRegex = "\"keepAlive\"\\s*:\\s*\\d+\\s*,?".toRegex(RegexOption.IGNORE_CASE)
+        return keepAliveRegex.replace(mystr, "")
+    }
+
 }
 

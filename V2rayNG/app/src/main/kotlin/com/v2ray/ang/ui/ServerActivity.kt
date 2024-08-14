@@ -18,6 +18,12 @@ import com.v2ray.ang.AppConfig.PREF_ALLOW_INSECURE
 import com.v2ray.ang.AppConfig.WIREGUARD_LOCAL_ADDRESS_V4
 import com.v2ray.ang.AppConfig.WIREGUARD_LOCAL_ADDRESS_V6
 import com.v2ray.ang.AppConfig.WIREGUARD_LOCAL_MTU
+import com.v2ray.ang.AppConfig.WIREGUARD_keep_alive
+import com.v2ray.ang.AppConfig.WIREGUARD_wnoise
+import com.v2ray.ang.AppConfig.WIREGUARD_wnoisecount
+import com.v2ray.ang.AppConfig.WIREGUARD_wnoisedelay
+import com.v2ray.ang.AppConfig.WIREGUARD_wpayloadsize
+
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.dto.ServerConfig
@@ -127,6 +133,12 @@ class ServerActivity : BaseActivity() {
     private val et_reserved3: EditText? by lazy { findViewById(R.id.et_reserved3) }
     private val et_local_address: EditText? by lazy { findViewById(R.id.et_local_address) }
     private val et_local_mtu: EditText? by lazy { findViewById(R.id.et_local_mtu) }
+
+    private val et_keepalive: EditText? by lazy { findViewById(R.id.et_keepalive) }
+    private val et_wnoise: EditText? by lazy { findViewById(R.id.et_wnoise) }
+    private val et_wnoisecount: EditText? by lazy { findViewById(R.id.et_wnoisecount) }
+    private val et_wnoisedelay: EditText? by lazy { findViewById(R.id.et_wnoisedelay) }
+    private val et_wpayloadsize: EditText? by lazy { findViewById(R.id.et_wpayloadsize) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -297,6 +309,38 @@ class ServerActivity : BaseActivity() {
             } else {
                 et_local_mtu?.text = Utils.getEditable(outbound.settings?.mtu.toString())
             }
+
+
+            if (outbound.settings?.peers?.get(0)?.keepAlive == null) {
+                et_keepalive?.text = Utils.getEditable(WIREGUARD_keep_alive)
+            } else {
+                et_keepalive?.text = Utils.getEditable(outbound.settings?.peers?.get(0)?.keepAlive.toString())
+            }
+
+            if (outbound.settings?.wnoise == null) {
+                et_wnoise?.text = Utils.getEditable(WIREGUARD_wnoise)
+            } else {
+                et_wnoise?.text = Utils.getEditable(outbound.settings?.wnoise.orEmpty())
+            }
+
+            if (outbound.settings?.wnoisecount == null) {
+                et_wnoisecount?.text = Utils.getEditable(WIREGUARD_wnoisecount)
+            } else {
+                et_wnoisecount?.text = Utils.getEditable(outbound.settings?.wnoisecount.orEmpty())
+            }
+
+            if (outbound.settings?.wnoisedelay == null) {
+                et_wnoisedelay?.text = Utils.getEditable(WIREGUARD_wnoisedelay)
+            } else {
+                et_wnoisedelay?.text = Utils.getEditable(outbound.settings?.wnoisedelay.orEmpty())
+            }
+
+            if (outbound.settings?.wpayloadsize == null) {
+                et_wpayloadsize?.text = Utils.getEditable(WIREGUARD_wpayloadsize)
+            } else {
+                et_wpayloadsize?.text = Utils.getEditable(outbound.settings?.wpayloadsize.orEmpty())
+            }
+
         }
         val securityEncryptions =
             if (config.configType == EConfigType.SHADOWSOCKS) shadowsocksSecuritys else securitys
@@ -516,6 +560,12 @@ class ServerActivity : BaseActivity() {
         }
         wireguard.address = et_local_address?.text.toString().removeWhiteSpace().split(",")
         wireguard.mtu = Utils.parseInt(et_local_mtu?.text.toString())
+
+        wireguard.peers?.get(0)?.keepAlive = Utils.parseInt(et_keepalive?.text.toString())
+        wireguard.wnoise = et_wnoise?.text.toString().trim()
+        wireguard.wnoisecount = et_wnoisecount?.text.toString().trim()
+        wireguard.wnoisedelay = et_wnoisedelay?.text.toString().trim()
+        wireguard.wpayloadsize = et_wpayloadsize?.text.toString().trim()
     }
 
     private fun saveStreamSettings(streamSetting: V2rayConfig.OutboundBean.StreamSettingsBean) {
@@ -548,7 +598,7 @@ class ServerActivity : BaseActivity() {
             sni = sniField
         }
         val allowInsecure = if (allowinsecures[allowInsecureField].isBlank()) {
-            settingsStorage?.decodeBool(PREF_ALLOW_INSECURE) ?: false
+            !(settingsStorage?.decodeBool(PREF_ALLOW_INSECURE) ?: false)
         } else {
             allowinsecures[allowInsecureField].toBoolean()
         }

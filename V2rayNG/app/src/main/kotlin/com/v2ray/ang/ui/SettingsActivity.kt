@@ -194,7 +194,7 @@ class SettingsActivity : BaseActivity() {
             updateFragment(settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, false))
             fragment?.isChecked = settingsStorage.getBoolean(AppConfig.PREF_FRAGMENT_ENABLED, false)
             fragmentPackets?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_PACKETS, "tlshello")
-            fragmentLength?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "50-100")
+            fragmentLength?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "10-20")
             fragmentInterval?.summary = settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "10-20")
 
             autoUpdateCheck?.isChecked = settingsStorage.getBoolean(AppConfig.SUBSCRIPTION_AUTO_UPDATE, false)
@@ -346,7 +346,7 @@ class SettingsActivity : BaseActivity() {
             fragmentInterval?.isEnabled = enabled
             if (enabled) {
                 updateFragmentPackets(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_PACKETS, "tlshello"))
-                updateFragmentLength(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "50-100"))
+                updateFragmentLength(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_LENGTH, "10-20"))
                 updateFragmentInterval(settingsStorage.decodeString(AppConfig.PREF_FRAGMENT_INTERVAL, "10-20"))
             }
         }

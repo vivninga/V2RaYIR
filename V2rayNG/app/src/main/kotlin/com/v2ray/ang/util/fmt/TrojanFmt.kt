@@ -20,7 +20,7 @@ object TrojanFmt {
     }
 
     fun parseTrojan(str: String): ServerConfig? {
-        var allowInsecure = settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false
+        var allowInsecure = !(settingsStorage?.decodeBool(AppConfig.PREF_ALLOW_INSECURE) ?: false)
         val config = ServerConfig.create(EConfigType.TROJAN)
 
         val uri = URI(Utils.fixIllegalUrl(str))
