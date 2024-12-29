@@ -11,18 +11,22 @@ android {
         applicationId = "com.Kaniar.V2RaYIR"
         minSdk = 21
         targetSdk = 34
-        versionCode = 578
-        versionName = "1.8.34"
+        versionCode = 583
+        versionName = "1.8.38"
         multiDexEnabled = true
-        splits.abi {
-            reset()
-            include(
-                "arm64-v8a",
-                "armeabi-v7a",
-                "x86_64",
-                "x86"
-            )
+        splits {
+            abi {
+                isEnable = true
+                include(
+                    "arm64-v8a",
+                    "armeabi-v7a",
+                    "x86_64",
+                    "x86"
+                )
+                isUniversalApk = true
+            }
         }
+
     }
 
     compileOptions {
@@ -50,13 +54,6 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
-    splits {
-        abi {
-            isEnable = true
-            isUniversalApk = true
-        }
-    }
-
     applicationVariants.all {
         val variant = this
         val versionCodes =
@@ -74,9 +71,7 @@ android {
                 if(versionCodes.containsKey(abi))
                 {
                     output.versionCodeOverride = (1000000 * versionCodes[abi]!!).plus(variant.versionCode)
-                }
-                else
-                {
+                } else {
                     return@forEach
                 }
             }
@@ -87,7 +82,7 @@ android {
         buildConfig = true
     }
 
-    packagingOptions {
+    packaging {
         jniLibs {
             useLegacyPackaging = true
         }
@@ -95,7 +90,7 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar","*.jar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar", "*.jar"))))
     testImplementation(libs.junit)
 
     implementation(libs.flexbox)
@@ -133,7 +128,6 @@ dependencies {
     implementation(libs.language.json)
     implementation(libs.quickie.bundled)
     implementation(libs.core)
-
     implementation(libs.work.runtime.ktx)
     implementation(libs.work.multiprocess)
 }
