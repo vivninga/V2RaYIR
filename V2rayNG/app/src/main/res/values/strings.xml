@@ -214,8 +214,8 @@
     <string name="title_configuration_restore">Restore configuration</string>
     <string name="title_configuration_share">Share configuration</string>
 
-    <string name="title_pref_promotion">Promotion</string>
-    <string name="summary_pref_promotion">Promotion,click for details(Donation can be removed)</string>
+    <string name="title_pref_promotion">Update</string>
+    <string name="summary_pref_promotion">Click To Update The App.</string>
 
     <string name="title_pref_auto_update_subscription">Automatic update subscriptions</string>
     <string name="summary_pref_auto_update_subscription">Update your subscriptions automatically with an interval in background. Depending on the device, this feature may not always work</string>
