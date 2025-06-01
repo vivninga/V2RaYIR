@@ -51,7 +51,7 @@ quickie-bundled = { module = "io.github.g00fy2.quickie:quickie-bundled", version
 
 rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
-rxpermissions = { module = "com.github.tbruyelle:rxpermissions", version.ref = "rxpermissions" }
+rxpermissions = { module = "com.github.tbruyelle:RxPermissions", version.ref = "rxpermissions" }
 toastcompat = { module = "me.drakeet.support:toastcompat", version.ref = "toastcompat" }
 editorkit = { module = "com.blacksquircle.ui:editorkit", version.ref = "editorkit" }
 language-base = { module = "com.blacksquircle.ui:language-base", version.ref = "editorkit" }
