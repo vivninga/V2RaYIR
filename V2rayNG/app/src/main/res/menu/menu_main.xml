@@ -37,6 +37,10 @@
                 android:title="@string/menu_item_import_config_manually_socks"
                 app:showAsAction="never" />
             <item
+                android:id="@+id/import_manually_http"
+                android:title="@string/menu_item_import_config_manually_http"
+                app:showAsAction="never" />
+            <item
                 android:id="@+id/import_manually_trojan"
                 android:title="@string/menu_item_import_config_manually_trojan"
                 app:showAsAction="never" />
@@ -44,10 +48,14 @@
                 android:id="@+id/import_manually_wireguard"
                 android:title="@string/menu_item_import_config_manually_wireguard"
                 app:showAsAction="never" />
+            <item
+                android:id="@+id/import_manually_hysteria2"
+                android:title="@string/menu_item_import_config_manually_hysteria2"
+                app:showAsAction="never" />
 
             <item
                 android:title="@string/menu_item_import_config_custom"
-                app:showAsAction="always">
+                app:showAsAction="ifRoom">
                 <menu>
                     <item
                         android:id="@+id/import_config_custom_clipboard"

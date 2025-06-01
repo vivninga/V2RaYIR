@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.ServerActivity">
 
     <LinearLayout
@@ -11,73 +12,7 @@
         android:orientation="vertical"
         android:padding="@dimen/layout_margin_top_height">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_server"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/layout_margin_top_height"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/server_lab_remarks" />
-
-            <EditText
-                android:id="@+id/et_remarks"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/edit_height"
-                android:inputType="text" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/layout_margin_top_height"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/server_lab_address3" />
-
-            <EditText
-                android:id="@+id/et_address"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/edit_height"
-                android:inputType="text" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/layout_margin_top_height"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/server_lab_port3" />
-
-            <EditText
-                android:id="@+id/et_port"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/edit_height"
-                android:inputType="number" />
-        </LinearLayout>
+        <include layout="@layout/layout_address_port" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -117,6 +52,25 @@
                 android:inputType="text" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_margin_top_height"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/server_lab_preshared_key" />
+
+
+            <EditText
+                android:id="@+id/et_preshared_key"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edit_height"
+                android:inputType="text" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -136,21 +90,10 @@
 
                 <EditText
                     android:id="@+id/et_reserved1"
-                    android:layout_width="60dp"
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/edit_height"
-                    android:inputType="number" />
+                    android:inputType="text" />
 
-                <EditText
-                    android:id="@+id/et_reserved2"
-                    android:layout_width="60dp"
-                    android:layout_height="@dimen/edit_height"
-                    android:inputType="number" />
-
-                <EditText
-                    android:id="@+id/et_reserved3"
-                    android:layout_width="60dp"
-                    android:layout_height="@dimen/edit_height"
-                    android:inputType="number" />
             </LinearLayout>
         </LinearLayout>
 
@@ -200,6 +143,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="5"
                 android:text="keepAlive (0 for disable,5,...)" />
 
             <EditText
@@ -219,12 +163,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="wnoise (any HEX,quic,random)" />
+                android:text="wnoise (any HEX,quic,random,none)" />
 
             <EditText
                 android:id="@+id/et_wnoise"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_height"
+                android:hint="quic"
                 android:inputType="text" />
 
         </LinearLayout>
@@ -244,6 +189,7 @@
                 android:id="@+id/et_wnoisecount"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_height"
+                android:hint="15"
                 android:inputType="text" />
 
         </LinearLayout>
@@ -263,6 +209,7 @@
                 android:id="@+id/et_wnoisedelay"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_height"
+                android:hint="1-2"
                 android:inputType="text" />
 
         </LinearLayout>
@@ -282,6 +229,7 @@
                 android:id="@+id/et_wpayloadsize"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_height"
+                android:hint="5-10"
                 android:inputType="text" />
 
         </LinearLayout>
@@ -289,8 +237,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/layout_margin_top_height"
             android:layout_marginTop="@dimen/layout_margin_top_height"
+            android:layout_marginBottom="@dimen/layout_margin_top_height"
             android:orientation="vertical" />
 
     </LinearLayout>

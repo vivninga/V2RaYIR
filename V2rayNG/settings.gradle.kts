@@ -1,8 +1,14 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -10,9 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter()
         maven { url = uri("https://jitpack.io") }
     }
 }
-rootProject.name = "V2rayNG"
+
+rootProject.name = "v2rayNG"
 include(":app")

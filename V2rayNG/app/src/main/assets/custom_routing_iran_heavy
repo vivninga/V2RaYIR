@@ -1,0 +1,72 @@
+[
+    {
+        "remarks": "Block ADS using c4u",
+        "outboundTag": "block",
+        "domain": [
+            "ext:geosite_c4u.dat:category-ads-all"
+        ]
+    },
+    {
+        "remarks": "Block Malicious using c4u",
+        "outboundTag": "block",
+        "domain": [
+            "ext:geosite_c4u.dat:nsfw",
+            "ext:geosite_c4u.dat:malware",
+            "ext:geosite_c4u.dat:phishing",
+            "ext:geosite_c4u.dat:cryptominers"
+        ]
+    },
+    {
+        "remarks": "Block malware IP using c4u",
+        "outboundTag": "block",
+        "ip": [
+            "ext:geoip_c4u.dat:malware",
+            "ext:geoip_c4u.dat:phishing"
+        ]
+    },
+    {
+        "remarks": "Bypass Iran domains using c4u",
+        "outboundTag": "direct",
+        "domain": [
+            "ext:geosite_c4u.dat:ir"
+        ]
+    },
+    {
+        "remarks": "Bypass .ir Domain by Regex",
+        "outboundTag": "direct",
+        "domain": [
+            "regexp:.*\\.ir$",
+            "regexp:.*\\.xn--mgba3a4f16a$"
+        ]
+    },
+    {
+        "remarks": "Bypass Iran IP using c4u",
+        "outboundTag": "direct",
+        "ip": [
+            "ext:geoip_c4u.dat:ir"
+        ]
+    },
+    {
+        "remarks": "Block 10.10.34.34",
+        "outboundTag": "block",
+        "ip": [
+            "10.10.34.34",
+            "10.10.34.35",
+            "10.10.34.36"
+        ]
+    },
+    {
+        "remarks": "Direct LAN domains",
+        "outboundTag": "direct",
+        "domain": [
+            "geosite:private"
+        ]
+    },
+    {
+        "remarks": "Direct LAN IP",
+        "outboundTag": "direct",
+        "ip": [
+            "geoip:private"
+        ]
+    }
+]
