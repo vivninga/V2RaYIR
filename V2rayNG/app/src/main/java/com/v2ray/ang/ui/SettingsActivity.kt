@@ -226,6 +226,8 @@ class SettingsActivity : BaseActivity() {
 
             listOf(
                 AppConfig.PREF_SNIFFING_ENABLED,
+                AppConfig.PREF_ALLOW_INSECURE
+
             ).forEach { key ->
                 findPreference<CheckBoxPreference>(key)?.isChecked =
                     MmkvManager.decodeSettingsBool(key, true)
@@ -239,8 +241,7 @@ class SettingsActivity : BaseActivity() {
                 AppConfig.PREF_CONFIRM_REMOVE,
                 AppConfig.PREF_START_SCAN_IMMEDIATE,
                 AppConfig.PREF_PREFER_IPV6,
-                AppConfig.PREF_PROXY_SHARING,
-                AppConfig.PREF_ALLOW_INSECURE
+                AppConfig.PREF_PROXY_SHARING
             ).forEach { key ->
                 findPreference<CheckBoxPreference>(key)?.isChecked =
                     MmkvManager.decodeSettingsBool(key, false)
