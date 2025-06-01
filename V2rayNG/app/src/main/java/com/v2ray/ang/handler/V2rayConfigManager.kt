@@ -536,7 +536,7 @@ object V2rayConfigManager {
                     length = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_LENGTH)
                         ?: "10-20",
                     interval = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_INTERVAL)
-                        ?: "10-20"
+                        ?: "0"
                 ),
                 noises = listOf(
                     V2rayConfig.OutboundBean.OutSettingsBean.NoiseBean(
